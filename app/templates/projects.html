@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <div class="graphs">
+
+        <div class="col_1" name="sample" id="sample">
+
+            <div class="col-md-12 span_3">
+
+                <form action="/projects/1" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="search" id="search" class="form-control1 input-search" placeholder="Search by project name...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="submit"><i class="fa fa-search"></i></button>
+                    </span>
+                    </div><!-- Input Group -->
+                </form>
+
+                <div class="bs-example1" data-example-id="contextual-table">
+                    {% if current_user.is_authenticated %}
+                        <button type="button" class="btn btn-xs btn-danger" id="createproject" name="createproject">创建项目</button>
+                    {% endif %}
+                    <script>
+                        $('#createproject').on('click', function(){
+                            layer.confirm('您确定要创建新项目吗？', {
+                                btn: ['确认','取消'] //按钮
+                            }, function(){
+                                $.ajax({
+                                    url: "/createproject/",
+                                    type: "post",
+                                    success: function (resp) {
+                                        if (resp.success){
+                                            layer.msg('您创建了新项目');
+                                            window.setTimeout(' window.close();', 1500);
+                                            window.location = "/projects/1";
+                                        }
+                                        else if(resp.error){
+                                            layer.msg('创建失败，请联系管理员查看原因');
+                                        }
+                                    },
+                                    error: function(ts) {
+                                        layer.msg( resp.errors);
+                                    }
+                                });
+
+                            }, function(){
+                                layer.msg('已取消');
+                            });
+                        });
+                    </script>
+                    <span class="label btn_7 label-primary">项目情况</span>
+                    总数：{{ count }}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>项目名称</th>
+                            <th>项目负责人</th>
+                            <th>项目类型</th>
+                            <th>项目状态(样本最小状态)</th>
+                            <th>创建时间</th>
+                            <th>项目进度</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for project in projects %}
+                            <tr>
+                                <th scope="row"><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.manager_name }}</a></th>
+                                <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.pj_project_tracker_name }}</a></td>
+                                <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.manager_type }}</a></td>
+                                <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project_state_list[project.manager_state_min] }}</a></td>
+                                <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.sys_inserttime }}</a></td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-primary" style="width: {{ project.manager_progress }}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    <nav>
+                        <ul class="pagination pagination-sm">
+                            {% if pageindex-1 >0 %}
+                                <li ><a href="/projects/1?search={{ manager_name }}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                            {% endif %}
+                            {% if pageindex-1 >= 1 %}
+                                <li><a href="/projects/{{ pageindex - 1 }}?search={{ manager_name }}" >{{ pageindex - 1 }}</a></li>
+                            {% endif %}
+                            <li class="active"><a href="/projects/{{ pageindex }}?search={{ manager_name }}">{{ pageindex }}</a></li>
+
+                            {% if pageindex + 1 <= page %}
+                                <li><a href="/projects/{{ pageindex + 1 }}?search={{ manager_name }}">{{ pageindex + 1 }}</a></li>
+                            {% endif %}
+
+                            {#        <li><a href="#">{{ pageindex+1  }}</a></li>#}
+                            {% if pageindex + 1 <= page  and  pageindex != page %}
+                                <li><a href="/projects/{{ page }}?search={{ manager_name }}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="clearfix"> </div>
+
+
+        <div class="copy_layout">
+            <p>基准医疗 &copy; 2016.Company name All rights reserved.powered by  alan - any problems please contract <a href="mailto:yaolin_fu@anchordx.com" title="网页模板" target="_blank">yaolin_fu@anchordx.com</a></p>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <div class="graphs">
+        <div class="xs">
+            <h3>样本:{{ sample.sample_code }}详细信息</h3>
+            <h4>状态:{{ state_list[sample.state] }}</h4>
+            {% if project.sample_id %}
+                <h4><a href="/projectdetail/{{ project.sample_id }}" target="_blank">所属项目:{{ project.manager_name }}</a></h4>
+            {% endif %}
+            {% if not project.sample_id %}
+                <h4>所属项目:无</h4>
+            {% endif %}
+
+
+            <div class="progress">
+                <div class="progress-bar progress-bar-primary" style="width: {{ sample.progress}}%"></div>
+            </div>
+
+
+            <div class="bs-example4" data-example-id="simple-responsive-table">
+                <div class="table-responsive">
+
+                        {% if  sample.reported_file != '无'%}
+                            <a href="/return-files?reported_file={{ sample.reported_file  }}" target="blank">
+                                <button class='btn btn-warng1' >报告文件已上传,点击查看/下载报告文件</button>
+                            </a>
+                        {% endif %}
+                 {% if current_user.is_authenticated %}
+                        <h4>上传报告文件:</h4>
+                        <form action="/upload_file/{{ sample.id }}" method='POST'  enctype=multipart/form-data>
+                            <div>
+                                <input type='file' name='file' id="file" >
+{#                                <input type="hidden", id="sample_id" name="sample_id" value="{{ sample.id }}">#}
+
+                            </div>
+                            <br>
+                        <input type='submit' class="btn-primary" value='确认上传'>
+                        </form>
+                    {% endif %}
+
+                </div>
+            </div>
+
+
+            <div class="clearfix"> </div>
+            <div class="bs-example4" data-example-id="simple-responsive-table">
+                <div class="table-responsive">
+
+                    <table class="table">
+                        <h1><span>样本信息</span></h1>
+                        <thead>
+                        <tr>
+                            <th><span >样本编号:</span><span style="color: #ce8483">{{ sample.sample_code }}</span></th>
+                            <th><span>姓名:</span><span style="color: #ce8483">{{ client.client_name }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >性别:</span> <span style="color: #ce8483">{{ client.client_ishave_gene }}</span></th>
+                            <th><span >年龄:</span> <span style="color: #ce8483">{{ client.client_age  }}</span></th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th><span >身份证:</span> <span style="color: #ce8483">{{ client.client_ic_num }}</span></th>
+                            <th><span >联系电话:</span><span style="color: #ce8483">{{ client.client_phone }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span>报告接收地址:</span><span style="color: #ce8483">{{ client.client_youjidizhi }}</span></th>
+                            <th><span >电子邮件:</span> <span style="color: #ce8483">{{ sample.report_recipients_email }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >就诊医院:</span> <span style="color: #ce8483">{{ sample.sample_sjyy   }}</span></th>
+                            <th><span >就诊科室:</span> <span style="color: #ce8483">{{ sample.sample_sjks or sample.s_sjks }}</span></th>
+
+                        </tr>
+                        <tr>
+                            <th><span >主管医生:</span><span style="color: #ce8483">{{ sample.sample_sjys }}</span></th>
+                            <th><span>医生邮箱:</span><span style="color: #ce8483">{{ client.DOCTOR_EMAIL }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >病理诊断:</span> <span style="color: #ce8483">{{ client.P_DIAGNOSIS }}</span></th>
+                            <th><span >临床诊断:</span> <span style="color: #ce8483">{{ client.client_ishave_gene_remark  }}</span></th>
+
+
+                        </tr>
+                        <tr>
+                            <th><span >临床分期:</span> <span style="color: #ce8483">{{ client.CLIN_STAGES }}</span></th>
+                            <th><span >传染病史:</span><span style="color: #ce8483">{{ client.INFECTION_HISTORY }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span>结核病史:</span><span style="color: #ce8483">{{ client.TUBERCULOSIS_HISTORY }}</span></th>
+                            <th><span >结节大小和分布:</span> <span style="color: #ce8483">{{ client.TUBERCLE_DISTRIBUTION }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >样本来源:</span> <span style="color: #ce8483">{{ sample.sample_source  }}</span></th>
+                            <th><span >采集时间:</span> <span style="color: #ce8483">{{ sample.sample_collect_time}}</span></th>
+                        </tr>
+
+                        <tr>
+                            <th><span >家族史:</span><span style="color: #ce8483">{{ client.FAMILY_HISTORY }}</span></th>
+                            <th><span>收样时间:</span><span style="color: #ce8483">{{ sample.RECEIVE_SAMPLE_DATE }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >样本数量:</span> <span style="color: #ce8483">{{ sample.sample_num }}</span></th>
+                            <th><span >样本类型:</span> <span style="color: #ce8483">{{ sample.sample_type  }}</span></th>
+                        </tr>
+
+
+
+
+                        <tr>
+                            <th><span >样本类型说明:</span> <span style="color: #ce8483">{{ sample.S_TYPE_NOTE or '无' }}</span></th>
+                            <th>
+                                <span >基因检测史:</span>
+                                <span class="email-title">{{ client.JC_DATE or ''}},{{ client.JC_GENE }},{{ client.RESULT }}</span>
+                                <span class="email-title">{{ client.JC_DATE_2 or ''}},{{ client.JC_GENE_2 }},{{ client.RESULT_2 }}</span>
+                                <span class="email-title">{{ client.JC_DATE_3 or ''}},{{ client.JC_GENE_3 }},{{ client.RESULT_3 }}</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th><span>曾有治疗史:</span><span style="color: #ce8483">手术：{{ client.CL_OPERATION }},化疗:{{ client.CL_CHEMOTHERAPY }},靶向治疗:{{ client.CL_TREATMENT }}</span></th>
+                            <th><span >癌种:</span> <span style="color: #ce8483">{{ sample.CANCER_1 }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >类型:</span> <span style="color: #ce8483">{{ sample.MEDICATION_1 or sample.CANCER_3_TXT }}</span></th>
+                            <th><span >产品名称:</span> <span style="color: #ce8483">{{ sample.AIM10 }}</span></th>
+                        </tr>
+
+                        <tr>
+                            <th><span >检测基因:</span><span style="color: #ce8483">{{ sample.S_JC_GENE }}</span></th>
+                            <th><span>剩余样本是否退回:</span><span style="color: #ce8483">{{ sample.IS_S_HT }}</span></th>
+                        </tr>
+                        <tr>
+                            <th><span >是否需要发票:</span> <span style="color: #ce8483">{{ sample. IS_FP  }}</span></th>
+
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+
+                    {% if sample_inputinfo %}
+                        {% for inputinfo in sample_inputinfo %}
+                            <p>==================</p>
+                            <table class="table">
+                                <h1><span>DNA提取</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >实验编号:</span><span style="color: #ce8483">{{ inputinfo.exp_number }}</span></th>
+                                    <th><span>血浆体积(mL):</span><span style="color: #ce8483">{{ inputinfo.d_plasma_volume }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >浓度(ng/µL):</span> <span style="color: #ce8483">{{ inputinfo.dna_extract_concentration }}</span></th>
+                                    <th><span >体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.dna_volume  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >DNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.dna_total1 }}</span></th>
+                                    <th><span >质检:</span><span style="color: #ce8483">{{ inputinfo.R_QUALITY }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>使用体积(µL):</span><span style="color: #ce8483">{{ inputinfo.d_use_volume1 }}</span></th>
+                                    <th><span >剩余体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.d_surplus_volume1 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >试剂盒类型:</span> <span style="color: #ce8483">{{ inputinfo.reagent_box_info   }}</span></th>
+                                    <th><span >提取时间:</span> <span style="color: #ce8483">{{ inputinfo.extract_time  }}</span></th>
+
+                                </tr>
+                                <tr>
+                                    <th><span >DNA存储位置:</span><span style="color: #ce8483">{{ inputinfo.d_storage_locat }}</span></th>
+                                    <th><span>DNA提取人:</span><span style="color: #ce8483">{{ inputinfo.d_extract_man }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.d_audit_person }}</span></th>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark1  }}</span></th>
+
+                                </tr>
+
+                                </tbody>
+                            </table>
+
+
+                            <table class="table">
+                                <h1><span>DNA预文库</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >浓度(ng/µL):</span><span style="color: #ce8483">{{ inputinfo.dna_extract_concentration2 }}</span></th>
+                                    <th><span>体积(µL):</span><span style="color: #ce8483">{{ inputinfo.dna_volume2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >DNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.dna_total2 }}</span></th>
+                                    <th><span >Indexi5i7:</span> <span style="color: #ce8483">{{ inputinfo.d_index  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >使用体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.d_use_volume2 }}</span></th>
+                                    <th><span >使用质量(ng):</span><span style="color: #ce8483">{{ inputinfo.d_use_quality2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>剩余体积(µL):</span><span style="color: #ce8483">{{ inputinfo.d_surplus_volume2 }}</span></th>
+                                    <th><span >剩余质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.d_surplus_quality2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >建库方法:</span> <span style="color: #ce8483">{{ inputinfo.d_cons_method   }}</span></th>
+                                    <th><span >预文库存储位置:</span> <span style="color: #ce8483">{{ inputinfo.d_sto_location  }}</span></th>
+
+                                </tr>
+                                <tr>
+                                    <th><span >建库时间:</span><span style="color: #ce8483">{{ inputinfo.d_cons_time }}</span></th>
+                                    <th><span>建库人:</span><span style="color: #ce8483">{{ inputinfo.d_build_man2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.d_audit_person1 }}</span></th>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark2  }}</span></th>
+
+                                </tr>
+
+                                </tbody>
+                            </table>
+
+
+                            <table class="table">
+                                <h1><span>DNA终文库</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >终文库名称*:</span><span style="color: #ce8483">{{ inputinfo.d_end_Libname }}</span></th>
+                                    <th><span>浓度(ng/µL):</span><span style="color: #ce8483">{{ inputinfo.dna_extract_concentration3 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.DNA_VOLUME3 }}</span></th>
+                                    <th><span >DNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.dna_total3  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >Indexi5i7:</span> <span style="color: #ce8483">{{ inputinfo.d_index_z }}</span></th>
+                                    <th><span >捕获panel:</span><span style="color: #ce8483">{{ inputinfo.d_bf_panel }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>使用体积(µL):</span><span style="color: #ce8483">{{ inputinfo.d_use_volume3 }}</span></th>
+                                    <th><span >使用质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.d_use_quality3 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >剩余体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.d_surplus_volume3   }}</span></th>
+                                    <th><span >剩余质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.d_surplus_quality3}}</span></th>
+
+                                </tr>
+                                <tr>
+                                    <th><span >终文库存储位置:</span><span style="color: #ce8483">{{ inputinfo.d_lib_locat }}</span></th>
+                                    <th><span>建库时间:</span><span style="color: #ce8483">{{ inputinfo.d_build_time }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >建库人:</span> <span style="color: #ce8483">{{ inputinfo.d_build_man3 }}</span></th>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.d_audit_person2  }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark3 }}</span></th>
+
+                                </tr>
+
+                                </tbody>
+                            </table>
+
+                            <table class="table">
+                                <h1><span>DNA终文库qPCR定量</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >稀释倍数:</span><span style="color: #ce8483">{{ inputinfo.dqpcr_dilution_ratio }}</span></th>
+                                    <th><span>qPCR测量值(pM):</span><span style="color: #ce8483">{{ inputinfo.dqpcr_measure }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >文库平均长度(bp):</span> <span style="color: #ce8483">{{ inputinfo.dqpcr_lib_length }}</span></th>
+                                    <th><span >文库有效浓度(nM):</span> <span style="color: #ce8483">{{ inputinfo.dqpc_concentration  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >定量时间:</span> <span style="color: #ce8483">{{ inputinfo.dqpcr_ration_time }}</span></th>
+                                    <th><span >终文库存储位置:</span><span style="color: #ce8483">{{ inputinfo.dqpcr_lib_locat }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>定量人:</span><span style="color: #ce8483">{{ inputinfo.dqpcr_ration_man }}</span></th>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.dqpcr_audit_person2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark4   }}</span></th>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+
+
+                            <table class="table">
+                                <h1><span>RNA提取</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >血浆体积(mL):</span><span style="color: #ce8483">{{ inputinfo.r_plasma_volume }}</span></th>
+                                    <th><span>浓度(ng/µL):</span><span style="color: #ce8483">{{ inputinfo.rna_extract_concentration }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.rna_volume }}</span></th>
+                                    <th><span >RNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.rna_total1  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >试剂盒类型:</span> <span style="color: #ce8483">{{ inputinfo.r_kit_type }}</span></th>
+                                    <th><span >使用体积(µL):</span><span style="color: #ce8483">{{ inputinfo.r_use_volume1 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>使用质量(ng):</span><span style="color: #ce8483">{{ inputinfo.r_use_quality1 }}</span></th>
+                                    <th><span >剩余体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.r_surplus_volume1 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >剩余质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.r_surplus_quality1   }}</span></th>
+                                    <th><span >提取时间:</span> <span style="color: #ce8483">{{ inputinfo.r_extract_time   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >RNA存储位置:</span> <span style="color: #ce8483">{{ inputinfo.r_storage_locat   }}</span></th>
+                                    <th><span >RNA提取人:</span> <span style="color: #ce8483">{{ inputinfo.r_extract_man   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.r_audit_person   }}</span></th>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark5   }}</span></th>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+
+
+                            <table class="table">
+                                <h1><span>RNA预文库</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >浓度(ng/µL):</span><span style="color: #ce8483">{{ inputinfo.rna_extract_concentration2 }}</span></th>
+                                    <th><span>体积(µL):</span><span style="color: #ce8483">{{ inputinfo.rna_volume2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >RNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.RNA_TOTAL2 }}</span></th>
+                                    <th><span >Indexi5i7:</span> <span style="color: #ce8483">{{ inputinfo.r_index  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >使用体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.r_use_volume2 }}</span></th>
+                                    <th><span >使用质量(ng):</span><span style="color: #ce8483">{{ inputinfo.r_use_quality2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>剩余体积(µL):</span><span style="color: #ce8483">{{ inputinfo.r_surplus_volume2 }}</span></th>
+                                    <th><span >剩余质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.r_surplus_quality2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >建库方法:</span> <span style="color: #ce8483">{{ inputinfo.r_cons_method   }}</span></th>
+                                    <th><span >建库时间:</span> <span style="color: #ce8483">{{ inputinfo.r_cons_time   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >预文库存储位置:</span> <span style="color: #ce8483">{{ inputinfo.r_sto_location   }}</span></th>
+                                    <th><span >建库人:</span> <span style="color: #ce8483">{{ inputinfo.r_build_man2   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.r_audit_person1   }}</span></th>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark6   }}</span></th>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+
+
+                            <table class="table">
+                                <h1><span>RNA终文库</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >终文库名称*:</span><span style="color: #ce8483">{{ inputinfo.r_end_Libname }}</span></th>
+                                    <th><span>浓度(ng/µL):</span><span style="color: #ce8483">{{ inputinfo.rna_extract_concentration3 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >体积(µL):</span> <span style="color: #ce8483">{{ inputinfo.rna_volume3 }}</span></th>
+                                    <th><span >DNA总量(ng):</span> <span style="color: #ce8483">{{ inputinfo.rna_total3  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >Indexi5i7:</span> <span style="color: #ce8483">{{ inputinfo.r_index_z }}</span></th>
+                                    <th><span >捕获panel:</span><span style="color: #ce8483">{{ inputinfo.r_bf_panel }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>剩余体积(µL):</span><span style="color: #ce8483">{{ inputinfo.r_surplus_volume3 }}</span></th>
+                                    <th><span >剩余质量(ng):</span> <span style="color: #ce8483">{{ inputinfo.r_surplus_quality3 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >终文库存储位置:</span> <span style="color: #ce8483">{{ inputinfo.r_lib_locat   }}</span></th>
+                                    <th><span >建库人:</span> <span style="color: #ce8483">{{ inputinfo.r_build_man3   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >建库时间:</span> <span style="color: #ce8483">{{ inputinfo.r_build_time   }}</span></th>
+                                    <th><span >审核人:</span> <span style="color: #ce8483">{{ inputinfo.r_audit_person2   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark7   }}</span></th>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+
+                            <table class="table">
+                                <h1><span>RNA终文库qPCR定量</span></h1>
+                                <thead>
+                                <tr>
+                                    <th><span >稀释倍数:</span><span style="color: #ce8483">{{ inputinfo.rqpcr_dilution_ratio }}</span></th>
+                                    <th><span>qPCR测量值(pM):</span><span style="color: #ce8483">{{ inputinfo.rqpcr_measure }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >文库平均长度(bp):</span> <span style="color: #ce8483">{{ inputinfo.rqpcr_lib_length }}</span></th>
+                                    <th><span >文库有效浓度(nM):</span> <span style="color: #ce8483">{{ inputinfo.rqpc_concentration  }}</span></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th><span >定量时间:</span> <span style="color: #ce8483">{{ inputinfo.rqpcr_ration_time }}</span></th>
+                                    <th><span >终文库存储位置:</span><span style="color: #ce8483">{{ inputinfo.rqpcr_lib_locat }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span>定量人:</span><span style="color: #ce8483">{{ inputinfo.rqpcr_ration_man }}</span></th>
+                                    <th><span >审核:</span> <span style="color: #ce8483">{{ inputinfo.rqpcr_audit_person2 }}</span></th>
+                                </tr>
+                                <tr>
+                                    <th><span >上机信息:</span> <span style="color: #ce8483">{{ inputinfo.R_SJ_INFOR   }}</span></th>
+                                    <th><span >数据质量:</span> <span style="color: #ce8483">{{ inputinfo.DATA_QUALITY   }}</span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <th><span >有效测序深度:</span> <span style="color: #ce8483">{{ inputinfo.EFF_SEQ_DEPTH   }}</span></th>
+                                    <th><span >备注:</span> <span style="color: #ce8483">{{ inputinfo.d_remark8   }}</span></th>
+
+                                </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                    {% endif %}
+
+                </div><!-- /.table-responsive -->
+
+            </div>
+
+            <div class="clearfix"> </div>
+        </div>
+        <div class="copy_layout" style="display:none;">
+            <p>基准医疗 &copy; 2016.Company name All rights reserved.powered by  alan - any problems please contract <a href="mailto:yaolin_fu@anchordx.com" title="网页模板" target="_blank">yaolin_fu@anchordx.com</a></p>
+        </div>
+
+    </div>
+{% endblock %}

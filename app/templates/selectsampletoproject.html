@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="Modern Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template,
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!-- Bootstrap Core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+    <!-- Custom CSS -->
+    <link href="/static/css/style.css" rel='stylesheet' type='text/css' />
+    <!-- Graph CSS -->
+    <link href="/static/css/lines.css" rel='stylesheet' type='text/css' />
+    <link href="/static/css/font-awesome.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="/static/js/jquery.min.js"></script>
+    <!----webfonts--->
+    <!---//webfonts--->
+    <!-- Nav CSS -->
+    <link href="/static/css/custom.css" rel="stylesheet">
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/js/metisMenu.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+    <!-- Graph JavaScript -->
+    <script src="/static/js/d3.v3.js"></script>
+    <script src="/static/js/rickshaw.js"></script>
+</head>
+<body id="wrapper">
+<div>
+    <div class="graphs">
+        <div class="xs">
+            <h3>选择样本</h3>
+
+            <div class="col-md-8 inbox_right">
+                <form action="/selectsamples/1" method="post">
+                    <div class="input-group">
+                        <input type="text" name="search" id="search" class="form-control1 input-search" placeholder="Search by sample code...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="submit"><i class="fa fa-search"></i></button>
+                    </span>
+                    </div><!-- Input Group -->
+                </form>
+                <div class="mailbox-content">
+
+                    <div class="float-right">
+                        <ul class="pagination pagination-sm">
+                            {% if pageindex-1 >0 %}
+                                <li ><a href="/selectsamples/1?search={{ sample_code }}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                            {% endif %}
+                            {% if pageindex-1 >= 1 %}
+                                <li><a href="/selectsamples/{{ pageindex - 1 }}?search={{ sample_code }}" >{{ pageindex - 1 }}</a></li>
+                            {% endif %}
+                            <li class="active"><a href="/selectsamples/{{ pageindex }}?search={{ sample_code }}">{{ pageindex }}</a></li>
+
+                            {% if pageindex + 1 < page %}
+                                <li><a href="/selectsamples/{{ pageindex + 1 }}?search={{ sample_code }}">{{ pageindex + 1 }}</a></li>
+                            {% endif %}
+
+                            {#        <li><a href="#">{{ pageindex+1  }}</a></li>#}
+                            {% if page-1 >0 and pageindex != page %}
+                                <li><a href="/selectsamples/{{ page }}?search={{ sample_code }}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div  id ="result"></div>
+                    <form action="/updatesamples?project_id={{ project_id }}" method="post">
+                        <button type="button" class="btn btn-sm btn-info update" name="update" id="update">确定</button>
+                        <script type="text/javascript">
+                            $('#update').on('click', function(){
+                                $("#result").html("");
+                                var sample_id = '';
+                                $(':checkbox:checked').each(function(i){
+                                    sample_id =  $(this).val()  + ',' + sample_id;
+                                });
+                                $.ajax({
+                                    url: "/updatesamples?project_id={{ project_id }}",
+                                    type: "post",
+                                    data: {
+                                        'sample_id': sample_id,
+                                    },
+                                    cache: false,
+                                    dataType: "json",
+                                    success: function (resp) {
+                                        if (resp.samples){
+                                            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                            parent.$('tbody').empty();
+                                            var contents = '';
+                                            for(let i in resp.samples){
+
+                                                parent.$('tbody').append('<tr><th scope="row"><a href="/sampledetail/'+ resp.samples[i].id +' " target="_blank">'+ resp.samples[i].sample_code +'</a></th> ' +
+                                                        '<td><a href="/sampledetail/'+ resp.samples[i].id +'" target="_blank">'+ resp.samples[i].sample_type +'</a></td> ' +
+                                                        '<td><a href="/sampledetail/'+ resp.samples[i].id +'" target="_blank">'+ resp.state_list[resp.samples[i].state]+'</a></td> ' +
+                                                        '<td><a href="/sampledetail/'+ resp.samples[i].id +'" target="_blank">'+ resp.samples[i].SYS_INSERTTIME +'</a></td> ' +
+                                                        '<td><div class="progress"><div class="progress-bar progress-bar-primary" style="width: '+ resp.samples[i].progress +'%"></div></div></td> ' +
+                                                        '<td><button type="button" class="btn btn-xs btn-danger">从该项目中剔除</button></td> </tr>');
+
+                                            }
+
+
+                                            parent.layer.msg('您更新了项目名称 [ ' +resp.project.manager_name + ' ]与 相关样本,将会刷新 ');
+                                            parent.layer.close(index);
+                                            parent.setTimeout( 'parent.location.reload()', 1500 );
+
+                                        }
+                                        else if(resp.errors){
+                                            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                            parent.layer.msg( resp.errors);
+                                            parent.layer.close(index);
+                                            {#                                            window.setTimeout('opener.location.reload();', 2000);#}
+
+                                        }
+
+
+                                    },
+                                    error: function(ts) {
+                                        $("#result").append('<div class="alert-success" role="alert" > <strong>'+ resp.errors +'</strong> </div>');
+
+                                    }
+                                });
+
+
+
+                            });
+
+
+
+                        </script>
+
+                        <table class="table">
+                            <tbody>
+
+                            {% for sample in samples %}
+                                <tr class="unread checked">
+                                    <td class="hidden-xs">
+                                        <input type="checkbox" class="checkbox" id="sample_id" name="sample_id" value="{{ sample.id }}">
+                                    </td>
+                                    <td class="hidden-xs">
+                                        <i class="fa fa-star icon-state-warning"></i>
+                                    </td>
+                                    <td class="hidden-xs">
+                                        {{ sample.sample_code }}
+                                    </td>
+                                    <td>
+                                        {{ state_list[sample.state] }}
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        {{ sample.SYS_INSERTTIME }}
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+
+
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="clearfix"> </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

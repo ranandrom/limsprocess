@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <div class="graphs">
+        <div class="xs">
+            <h3>项目:{{ project.manager_name }}
+                {% if current_user.is_authenticated %}
+                    <button type="button" class="btn btn-xs btn-danger" id="deleteproject" name="deleteproject">删除该项目</button>
+                {% endif %}
+
+                <script>
+                    $('#deleteproject').on('click', function(){
+                        layer.confirm('您确定要将此样本从该项目中删除吗？', {
+                            btn: ['确认','取消'] //按钮
+                        }, function(){
+                            $.ajax({
+                                url: "/deleteproject?project_id={{ project.id }}",
+                                type: "post",
+                                cache: false,
+                                dataType: "json",
+                                success: function (resp) {
+                                    if (resp.success){
+                                        layer.msg('您删除了了项目');
+                                        window.setTimeout(' window.close();', 1500);
+                                        window.location = "/projects/1";
+                                    }
+                                    else if(resp.errors){
+                                        layer.msg( resp.errors);
+                                    }
+                                },
+                                error: function(ts) {
+                                    layer.msg( resp.errors);
+                                }
+                            });
+
+                        }, function(){
+                            layer.msg('已取消，不要乱删', {
+                                time: 20000, //20s后自动关闭
+                                btn: ['明白了']
+                            });
+                        });
+                    });
+                </script>
+            </h3>
+            <h4>最小状态:{{ project_state_list[project.manager_state_min] }}</h4>
+            <div class="progress">
+                <div class="progress-bar progress-bar-primary" style="width: {{ project.manager_progress }}%"></div>
+            </div>
+            <div class="col-md-4 email-list1">
+
+
+            </div>
+            <div class="col-md-12 inbox_right">
+
+
+                <ul class="collection">
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="pj_code" >{{ project.pj_code }}</span>
+                            <p class="truncate grey-text ultra-small">项目编号</p>
+
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="manager_name" >{{ project.manager_name }}</span>
+                            <p class="truncate grey-text ultra-small">项目名称</p>
+
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="pj_project_tracker_name">{{ project.pj_project_tracker_name }}</span>
+                            <p class="truncate grey-text ultra-small">项目负责人</p>
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="pj_action_expt" >{{ project.pj_action_expt }}</span>
+                            <p class="truncate grey-text ultra-small">实验室负责人</p>
+
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+
+
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="manager_member">{{ project.manager_member }}</span>
+                            <p class="truncate grey-text ultra-small">项目关键人员</p>
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+
+                    <li class="collection-item avatar email-unread">
+                        <i class="fa fa-users icon_1"></i>
+                        <div class="avatar_left">
+                            <span class="email-title" id="manager_type">{{ project.manager_type }}</span>
+                            <p class="truncate grey-text ultra-small">项目类型</p>
+                        </div>
+                        {#                      <a href="#!" class="secondary-content"><span class="new badge blue">4</span></a>#}
+                        <div class="clearfix"> </div>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <button type="button" class="btn btn-xs btn-primary" name="modify" id="modify">修改项目信息</button>
+                    {% endif %}
+
+                    <script>
+                        $('#modify').on('click', function(){
+                            //页面层
+                            //iframe层-父子操作
+                            layer.open({
+                                type: 2,
+                                area: ['540px', '600px'],
+                                fixed: false, //不固定
+                                maxmin: true,
+                                shade: [0],
+                                content: '/projectmodify/{{ project.id }}'
+                            });
+                        });
+                    </script>
+                </ul>
+
+
+
+            </div>
+            <div class="clearfix"> </div>
+
+            <div class="col_1" name="sample" id="sample">
+
+                <div class="col-md-12 span_3">
+                    {#              <form action="#" method="GET">#}
+                    {#                <div class="input-group">#}
+                    {#                    <input type="text" name="search" class="form-control1 input-search" placeholder="Search...">#}
+                    {#                    <span class="input-group-btn">#}
+                    {#                        <button class="btn btn-success" type="button"><i class="fa fa-search"></i></button>#}
+                    {#                    </span>#}
+                    {#                </div><!-- Input Group -->#}
+                    {#            </form>#}
+
+                    <div class="bs-example1" data-example-id="contextual-table">
+                        <span class="label btn_7 label-primary">样本情况</span>
+                        {% if current_user.is_authenticated %}
+                            <button type="button" class="btn btn-xs btn-primary" id="selectsamples" name="selectsamples">选择样本归属此项目</button>
+                        {% endif %}
+
+
+
+                        <script>
+                            $('#selectsamples').on('click', function(){
+                                //页面层
+                                //iframe层-父子操作
+                                layer.open({
+                                    type: 2,
+                                    area: ['800px', '720px'],
+                                    fixed: false, //不固定
+                                    maxmin: true,
+                                    shade: [0],
+                                    content: '/selectsamples?project_id={{ project.id }}'
+                                });
+                            });
+                        </script>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>样本条形码</th>
+                                <th>样本类型</th>
+                                <th>样本状态</th>
+                                <th>样本时间</th>
+                                <th>样本进度</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for sample in samples %}
+                                <tr>
+                                    <th scope="row"><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.sample_code }}</a></th>
+                                    <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.sample_type }}</a></td>
+                                    <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ state_list[sample.state] }}</a></td>
+                                    <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.SYS_INSERTTIME }}</a></td>
+
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-primary" style="width: {{ sample.progress }}%"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if current_user.is_authenticated %}
+                                            <button type="button" class="btn btn-xs btn-danger" id="delete{{ sample.id }}" name="delete{{ sample.id }}">从该项目中剔除</button>
+                                        {% endif %}
+
+                                        <script>
+                                            $('#delete{{ sample.id }}').on('click', function(){
+                                                //询问框
+
+                                                layer.confirm('您确定要将此样本从该项目中删除吗？', {
+                                                    btn: ['确认','取消'] //按钮
+                                                }, function(){
+                                                    $.ajax({
+                                                        url: "/deletesamples?project_id={{ project.id }}&sample_id={{ sample.id }}",
+                                                        type: "post",
+                                                        cache: false,
+                                                        dataType: "json",
+                                                        success: function (resp) {
+                                                            if (resp.success){
+                                                                layer.msg('您删除了了样本： [ ' +resp.samples[i].sample_code + ' ] ');
+                                                            }
+                                                            else if(resp.errors){
+                                                                layer.msg( resp.mess);
+                                                            }
+                                                        },
+                                                        error: function(ts) {
+                                                            layer.msg( resp.mess);
+                                                        }
+                                                    });
+                                                    layer.msg('已经将此样本从改项目中删除了，你可以在“选择样本”中添加新的样本.将会刷新', {icon: 1});
+                                                    window.setTimeout('location.reload()', 1500);
+                                                }, function(){
+                                                    layer.msg('已取消，不要乱删', {
+                                                        time: 20000, //20s后自动关闭
+                                                        btn: ['明白了']
+                                                    });
+                                                });
+                                            });
+                                        </script>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+            <div class="clearfix"> </div>
+
+
+
+
+
+        </div>
+        <div class="copy_layout">
+            <p>基准医疗 &copy; 2016.Company name All rights reserved.powered by  alan - any problems please contract <a href="mailto:yaolin_fu@anchordx.com"   target="_blank">yaolin_fu@anchordx.com</a></p>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+         <div class="graphs" style="width:100%;height:100%;margin:0 auto;background-color: white">
+
+           	<div class="col_3" style="width:100%;height:100%;margin:0 auto;">
+
+                 <div class="col-md-12 span_3" style="width:100%;height:100%;margin:0 auto;">
+
+                     <div class="input-group" style="height:20%;margin:0 auto;">
+                            <!--<img src="/static/images/logo.png">-->
+                     </div><!-- Input Group -->
+
+                    <form action="/samples/1" method="post">
+                        <div class="input-group" style="width:50%;margin:0 auto;text-align:center">
+                            <p><img ng-hide="true" src="/static/images/logo2.png"  style="width:400px;height:190px;"></p>
+                            <br>
+                            <div class="input-group" style="width:100%;margin:0 auto;">
+                                <input type="text" name="search" id="search" class="form-control1 input-search" placeholder="请输入您的样本条形码号">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-success" type="submit"><i class="fa fa-search">点击提交</i></button>
+                                </span>
+                           </div>
+                        </div><!-- Input Group -->
+                    </form>
+                </div>
+
+
+        	<div class="col-md-3 widget widget1" style="display:none;">
+        		<div class="r3_counter_box">
+                    <i class="pull-left fa fa-exchange:before icon-rounded"></i>
+                    <div class="stats">
+                      <h5><strong>{{ projectcount }}</strong></h5>
+                      <span>项目数</span>
+                    </div>
+                </div>
+        	</div>
+        	<div class="col-md-3 widget widget1" style="display:none;">
+        		<div class="r3_counter_box">
+                    <i class="pull-left fa fa-users user1 icon-rounded"></i>
+                    <div class="stats">
+                      <h5><strong>{{ samplecount }}</strong></h5>
+                      <span>样品数</span>
+                    </div>
+                </div>
+        	</div>
+
+
+
+        	<div class="clearfix"> </div>
+      </div>
+
+
+      <div class="col_1" name="sample" id="sample" >
+
+		      <div class="col-md-12 span_3">
+
+		  <div class="bs-example1" data-example-id="contextual-table" style="display:none;">
+             <span class="label btn_7 label-primary">最近样本情况</span>
+              <span class="label btn_7 label-success"> <a href="/samples/1" >所有样本</a></span>
+		    <table class="table">
+		      <thead>
+		        <tr>
+		          <th>样本条形码</th>
+		          <th>(样本)实验编号</th>
+		          <th>客户名称</th>
+		          <th>样本类型</th>
+		          <th>样本状态</th>
+		          <th>样本送检时间</th>
+		          <th>应出报告时间</th>
+		          <th>实际出报告时间</th>
+		          <th>样本进度</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+
+              {% for sample in samplelist %}
+		        <tr>
+		          <th scope="row"><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.sample_code }}</a></th>
+		          <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.exp_number }}</a></td>
+		          <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.client_name }}</a></td>
+		          <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.sample_type }}</a></td>
+		          <td>
+                      <a href="/sampledetail/{{ sample.id }}" target="_blank">
+                          {% if sample.state_info and sample.state <= 3 and sample.state >= 2 %}
+                          <span class="email-title" id="sample_state{{ sample.id }}">{{ sample.state_info }}</span>
+                          {% else %}
+                          <span class="email-title" id="sample_state{{ sample.id }}">{{ state_list[sample.state] }}</span>
+                        {% endif %}
+                      </a>
+                  {% if current_user.is_authenticated %}
+               <button type="button" class="btn btn-xs btn-primary" name="samplestate" id="samplestate{{ sample.id }}">修改样本状态</button>
+            {% endif %}
+
+                       <script>
+                        $('#samplestate{{ sample.id }}').on('click', function(){
+                            //页面层
+                            //iframe层-父子操作
+                            layer.open({
+                                type: 2,
+                                area: ['540px', '300px'],
+                                fixed: false, //不固定
+                                maxmin: true,
+                                shade: [0],
+                                content: '/samplestate/{{ sample.id }}'
+                            });
+                        });
+                    </script>
+                  </td>
+		          <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.sample_re_time }}</a></td>
+		          <td><a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.should_report_time }}</a></td>
+                		          <td>
+                                      <a href="/sampledetail/{{ sample.id }}" target="_blank">{{ sample.reported_time }}</a>
+                                      {% if  sample.reported_file != '无'%}
+                            <a href="/return-files?reported_file={{ sample.reported_file  }}" target="blank">
+                                <button class='btn btn-warng1' >报告文件</button>
+                            </a>
+                        {% endif %}
+                                  </td>
+
+		          <td>
+                      <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ sample.progress }}%"></div>
+                  </div>
+                  </td>
+		        </tr>
+            {% endfor %}
+
+		      </tbody>
+		    </table>
+		   </div>
+	   </div>
+
+
+            <div class="clearfix"> </div>
+	  </div>
+
+    </div>
+
+
+    <div class="graphs">
+
+      <div class="col_1" name="project" id="project" style="display:none;">
+
+		      <div class="col-md-8 span_3">
+
+		  <div class="bs-example1" data-example-id="contextual-table" style="display:none;">
+             <span class="label btn_7 label-primary">最近项目</span>
+           <span class="label btn_7 label-success"> <a href="/projects/1" >所有项目</a></span>
+
+		    <table class="table">
+		      <thead>
+		        <tr>
+		          <th>项目名称</th>
+		          <th>项目负责人</th>
+		          <th>项目类型</th>
+		          <th>项目状态(样本最小状态)</th>
+		          <th>创建时间</th>
+		          <th>项目进度</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+              {% for project in projects %}
+		        <tr>
+		          <th scope="row"><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.manager_name }}</a></th>
+		          <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.pj_project_tracker_name }}</a></td>
+		          <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.manager_type }}</a></td>
+		          <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project_state_list[project.manager_state_min] }}</a></td>
+		          <td><a href="/projectdetail/{{ project.id }}" target="_blank">{{ project.sys_inserttime }}</a></td>
+		          <td>
+                      <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ project.manager_progress }}%"></div>
+                  </div>
+                  </td>
+		        </tr>
+            {% endfor %}
+
+		      </tbody>
+		    </table>
+
+		   </div>
+	   </div>
+		    <div class="col-md-4" style="display:none;">
+ 		       <div class="activity_box">
+		        <div class="scrollbar" id="style-2" style="display:none;">
+                               <span class="label btn_7 label-primary">最近流程</span>
+
+                    {% for worklog in worklogs %}
+                    <div class="activity-row">
+	                 <div class="col-xs-1"><i class="fa fa-check text-info icon_11"></i></div>
+ 	                 <div class="col-xs-8 activity-desc">
+	                 	<h5><a href="#">{{ worklog.flow_type }}({{ worklog.flow_name }})</a>{{ worklog.log_remark }}</h5>
+	                    <p>业务员： {% if worklog.yw_man %} {{ worklog.yw_man }} {% else %}{{ worklog.log_excman }}{% endif %},状态：{{ state_list[worklog.flow_sate] or worklog.flow_sate}}</p>
+	                    <h6>{{ worklog.log_time }}</h6>
+	                 </div>
+	                 <div class="clearfix"> </div>
+                    </div>
+                    {% endfor %}
+
+	  		        </div>
+		          </div>
+		    </div>
+
+            <div class="clearfix"> </div>
+      <div class="copy_layout">
+         <p>基准医疗 &copy; 2016.Company name All rights reserved.powered by  alan - any problems please contract <a href="mailto:yaolin_fu@anchordx.com" title="网页模板" target="_blank">yaolin_fu@anchordx.com</a></p>
+
+            </div>
+	  </div>
+
+    </div>
+
+
+ {% endblock %}
