@@ -11,19 +11,12 @@
                <!--<span class="label btn_7 label-success" style="display:none;"> <a href="/samples/1" >所有样本</a></span >-->
             <form action="/samples/1" method="post">
                 <div class="input-group">
-                    <input type="text" name="search" id="search" class="form-control1 input-search" placeholder="Search by 样本条形码..." style="display:none;">
+                    {% for sample in samplelist %}
+                    <input type="text" name="search" id="search" class="form-control1 input-search" value="{{ sample.sample_code }}" style="display:none;">
+                    {% endfor %}
                     <span class="input-group-btn" style="display:none;">
                         <button class="btn btn-success" type="submit"><i class="fa fa-search"></i></button>
                     </span>
-                </div><!-- Input Group -->
-            </form>
-
-        <form action="/samples/1" method="post" >
-                <div class="input-group">
-                    <input type="text" name="search_by_expcode" id="search_by_expcode" class="form-control1 input-search" placeholder="Search by 样本（实验）编号..." style="display:none;">
-                    <!-- <span class="input-group-btn" style="display:none;">
-                        <button class="btn btn-success" type="submit"><i class="fa fa-search"></i></button>
-                    </span>-->
                 </div><!-- Input Group -->
             </form>
 
@@ -40,9 +33,11 @@
                         <th>样本条形码</th>
                         <th style="display:none;">(样本)实验编号</th>
                         <th>受检者</th>
+                        <th>就诊医院</th>
                         <th>样本类型</th>
+                        <th>检测方案</th>
                         <th>样本状态</th>
-                        <th>样本送检时间</th>
+                        <th>收样时间</th>
                         <th style="display:none;">应出报告时间</th>
                         <th style="display:none;">实际出报告时间</th>
                         <th>样本进度</th>
@@ -55,30 +50,15 @@
 		          <th scope="row">{{ sample.sample_code }}</th>
 		          <td style="display:none;">{{ sample.exp_number }}</td>
 		          <td>{{ sample.client_name }}</td>
+                  <td>{{ sample.sample_sjyy }}</td>
 		          <td>{{ sample.sample_type }}</td>
+                  <td>{{ sample.AIM10 }}</td>
 		          <td>
-
                           {% if sample.state_info and sample.state <= 3 and sample.state >=2 %}
                           <span class="email-title" id="sample_state{{ sample.id }}">{{ sample.state_info }}</span>
                           {% else %}
                           <span class="email-title" id="sample_state{{ sample.id }}">{{ state_list[sample.state] }}</span>
                         {% endif %}
-
-                    <button type="button" class="btn btn-xs btn-primary" name="samplestate" id="samplestate{{ sample.id }}" style="display:none;">修改样本状态</button>
-                       <script>
-                        $('#samplestate{{ sample.id }}').on('click', function(){
-                            //页面层
-                            //iframe层-父子操作
-                            layer.open({
-                                type: 2,
-                                area: ['540px', '300px'],
-                                fixed: false, //不固定
-                                maxmin: true,
-                                shade: [0],
-                                content: '/samplestate/{{ sample.id }}'
-                            });
-                        });
-                    </script>
                   </td>
 		          <td>{{ sample.sample_re_time }}</td>
 		          <td style="display:none;">{{ sample.should_report_time }}</td>
@@ -91,9 +71,13 @@
                         {% endif %}
                   </td>
 		          <td>
-                      <div class="progress">
-                    <div class="progress-bar progress-bar-primary" style="width: {{ sample.progress }}%"></div>
-                  </div>
+                      <div class="progress" style="background-color: darkgrey">
+                          <!--<div class="progress-bar progress-bar-primary" style="width: {{ sample.progress }}%"></div>-->
+                          <div class="progress-bar progress-bar-info progress-bar-striped active" style="width: {{ sample.progress }}%;background-color: dodgerblue">
+                               <!--<div class="progress-value">{{ sample.progress }}%</div>-->
+                          </div>
+                          <!--<div class="progress-bar progress-bar-primary" style="width: {{ sample.progress }}%"></div>-->
+                      </div>
                   </td>
 		        </tr>
             {% endfor %}

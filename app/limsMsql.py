@@ -235,8 +235,8 @@ def select_sample(sample_code=None,index=0,pagecount=5):
             count = db.select(sql_select_count)[0]['count(*)']
         else:
             sample_code = sample_code.encode('utf-8')
-            sql_select = "select * from cq_sample where sample_code like '%{}%' order by sys_inserttime  desc limit {},{};".format(sample_code,index, pagecount)
-            sql_select_count = "select count(*)  from cq_sample where sample_code like '%{}%' order by sys_inserttime desc ;".format(sample_code)
+            sql_select = "select * from cq_sample where sample_code="+sample_code+" order by sys_inserttime desc;".format(sample_code,index, pagecount)
+            sql_select_count = "select count(*)  from cq_sample where sample_code="+sample_code+" order by sys_inserttime desc ;".format(sample_code)
             count = db.select(sql_select_count)[0]['count(*)']
         results = db.select(sql_select)
 

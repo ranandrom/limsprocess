@@ -19,14 +19,24 @@ def get_sample_list(samples):
     for sample in samples:
         client = select_clientname_by_id(sample['cq_client_id'])
         should_report_time = workdays(start=sample['sample_re_time'], count=16).strftime('%Y-%m-%d')
+        progress_tuple = ('信息录入', 'DNA提取', '文库构建', '上机测序', '检测结果', '生信分析', '生成报告', '报告发送', '结束')
+        Pro = 0;
+        #print 'zhungtai: ',sample['state_info']
+        for i in range(len(progress_tuple)):
+            if progress_tuple[i].decode('utf-8')==sample['state_info']:
+                #print 'i: ', i
+                Pro = (i+1)*100/len(progress_tuple)
+        #print 'Pro: ', Pro
         samplelist.append({'id': sample['id'],
                            'sample_code': sample['sample_code'],
                            'sample_type': sample['sample_type'],
+                           'sample_sjyy': sample['sample_sjyy'],
+                           'AIM10': sample['AIM10'],
                            'state_info': sample['state_info'],
                            'reported_time': sample['reported_time'],
                            'state': sample['state'],
                            'sample_re_time': sample['sample_re_time'],
-                           'progress': sample['progress'],
+                           'progress': Pro,
                            'client_name': client['client_name'],
                            'should_report_time': should_report_time,
                            'exp_number' : client['h_dj_code'] or client['h_bl_code'],
@@ -58,59 +68,64 @@ def get_sample_page(pageindex=1, pagecount=100):
     sample_code = request.form.get('search', None)
     search_by_expcode = request.form.get('search_by_expcode', None)
     if request.method == "POST":
-
+        # print 1
         if sample_code is not None:
             samples, count, page = select_sample(sample_code=sample_code, index=(pageindex - 1) * pagecount,
                                                  pagecount=pagecount)
-
 
         elif search_by_expcode is not None:
             samples, count, page = select_sample_by_expcode(expcode=search_by_expcode, index=(pageindex - 1) * pagecount,
                                                             pagecount=pagecount)
         else:
-            samples, count, page = select_sample(sample_code=sample_code, index=(pageindex - 1) * pagecount,
-                                                 pagecount=pagecount)
+            # print 3
+            # samples, count, page = select_sample(sample_code=sample_code, index=(pageindex - 1) * pagecount,
+            #                                      pagecount=pagecount)
+            return render_template('index.html')
+
         samplelist = get_sample_list(samples)
-        print samplelist
+
+        # print samplelist
         return render_template('samples.html', title='searching samples', samples=samples, count=count, page=page, samplelist=samplelist,
                                state_list=state_list, pageindex=pageindex, sample_code=sample_code)
     else:
-        samples, samplescount, samplespage = select_sample(sample_code=sample_code,index=(pageindex-1)*pagecount,pagecount=pagecount)
-        if sample_code is None or sample_code == '':
-            count, page = sample_count(pagecount)
-        else:
-            count, page = samplescount, samplespage
-        samplelist = get_sample_list(samples)
+        # print 2
+        # samples, samplescount, samplespage = select_sample(sample_code=sample_code,index=(pageindex-1)*pagecount,pagecount=pagecount)
+        # if sample_code is None or sample_code == '':
+        #     count, page = sample_count(pagecount)
+        # else:
+        #     count, page = samplescount, samplespage
+        # samplelist = get_sample_list(samples)
+        #
+        # # print samplelist
+        #
+        # return render_template('samples.html', title='Samples', samples=samples, count=count, page=page, state_list=state_list, pageindex=pageindex, samplelist=samplelist, sample_code=sample_code)
 
-        print samplelist
-
-
-        return render_template('samples.html', title='Samples', samples=samples, count=count, page=page, state_list=state_list, pageindex=pageindex, samplelist=samplelist, sample_code=sample_code)
+        return render_template('index.html')
 
 #所有项目
-@app.route('/projects/<int:pageindex>',methods=['GET','POST'])
-def get_project_page(pageindex=1,pagecount=10):
-    if pageindex < 0 :
-        pageindex = 0
-    manager_name = request.args.get('search')
-    if request.method == "POST":
-        manager_name = request.form.get('search')
-        if manager_name is None or manager_name == '': sample_code = None
-        projects, count, page = select_project(manager_name=manager_name, index=(pageindex - 1) * pagecount,
-                                               pagecount=pagecount)
-
-        return render_template('samples.html', title='searching projects', projects=projects, count=count, page=page,
-                               state_list=state_list, pageindex=pageindex, manager_name=manager_name)
-    else:
-        projects, projectcount, projectpage = select_project(manager_name=manager_name, index=(pageindex - 1) * pagecount,
-                                                             pagecount=pagecount)
-        if manager_name is None or manager_name == '':
-            count, page = project_count(pagecount)
-        else:
-            count, page = projectcount, projectpage
-
-
-    return render_template('projects.html', title='Projects', projects=projects, count=count, page=page, project_state_list=project_state_list, pageindex=pageindex, manager_name=manager_name)
+# @app.route('/projects/<int:pageindex>',methods=['GET','POST'])
+# def get_project_page(pageindex=1,pagecount=10):
+#     if pageindex < 0 :
+#         pageindex = 0
+#     manager_name = request.args.get('search')
+#     if request.method == "POST":
+#         manager_name = request.form.get('search')
+#         if manager_name is None or manager_name == '': sample_code = None
+#         projects, count, page = select_project(manager_name=manager_name, index=(pageindex - 1) * pagecount,
+#                                                pagecount=pagecount)
+#
+#         return render_template('samples.html', title='searching projects', projects=projects, count=count, page=page,
+#                                state_list=state_list, pageindex=pageindex, manager_name=manager_name)
+#     else:
+#         projects, projectcount, projectpage = select_project(manager_name=manager_name, index=(pageindex - 1) * pagecount,
+#                                                              pagecount=pagecount)
+#         if manager_name is None or manager_name == '':
+#             count, page = project_count(pagecount)
+#         else:
+#             count, page = projectcount, projectpage
+#
+#
+#     return render_template('projects.html', title='Projects', projects=projects, count=count, page=page, project_state_list=project_state_list, pageindex=pageindex, manager_name=manager_name)
 
 
 #样本详情

@@ -6,8 +6,8 @@
 以及增删改：dml
 '''
 
-import pymysql
-pymysql.install_as_MySQLdb()
+# import pymysql
+# pymysql.install_as_MySQLdb()
 import MySQLdb
 import time, re
 
